@@ -86,10 +86,20 @@ export default function Home() {
         description: "Données envoyées automatiquement",
       });
     } catch (err: any) {
-      console.error("Détail erreur:", err); // Ouvre la console devtools sur mobile
-      toast.error("Échec de l'analyse", {
-        description: err?.message || "Erreur inconnue",
-      });
+      console.error("=== ERREUR SCAN ===");
+      console.error("Message:", err.message);
+      console.error("Cause:", err.cause);
+
+      let errorMsg = "Vérifiez votre connexion";
+      if (err.message.includes("Failed to fetch")) {
+        errorMsg = "Impossible de joindre le serveur (vérifiez l'URL API)";
+      } else if (err.message.includes("timeout")) {
+        errorMsg = "Le serveur met trop de temps à répondre (cold start ?)";
+      }
+
+      toast.error("Échec de l'analyse", { description: errorMsg });
+    } finally {
+      setLoading(false);
     }
   };
 
