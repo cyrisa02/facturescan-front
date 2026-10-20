@@ -1,7 +1,15 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Camera, Loader2, Download, FileText, History, CheckCircle2, AlertCircle } from "lucide-react";
+import {
+  Camera,
+  Loader2,
+  Download,
+  FileText,
+  History,
+  CheckCircle2,
+  AlertCircle,
+} from "lucide-react";
 import { toast } from "sonner";
 
 type FormData = {
@@ -29,7 +37,11 @@ export default function Home() {
   useEffect(() => {
     if (data) {
       const history = JSON.parse(localStorage.getItem("factures") || "[]");
-      history.unshift({ ...data, id: Date.now(), timestamp: new Date().toISOString() });
+      history.unshift({
+        ...data,
+        id: Date.now(),
+        timestamp: new Date().toISOString(),
+      });
       localStorage.setItem("factures", JSON.stringify(history.slice(0, 50)));
       setHistoryCount(history.slice(0, 50).length);
     }
@@ -49,8 +61,10 @@ export default function Home() {
   const handleScan = async () => {
     if (!imageBase64) return;
     setLoading(true);
-    
-    toast.info("Analyse en cours...", { description: "L'IA lit votre facture" });
+
+    toast.info("Analyse en cours...", {
+      description: "L'IA lit votre facture",
+    });
 
     try {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
@@ -63,15 +77,19 @@ export default function Home() {
       if (!res.ok) throw new Error();
       const result = await res.json();
       setData(result);
-      toast.success("Facture extraite !", { description: `${result.fournisseur} - ${result.montant_ttc}€` });
-      
-      // Notification spécifique pour le webhook auto
-      toast.success("Sync Google Sheets", { description: "Données envoyées automatiquement" });
+      toast.success("Facture extraite !", {
+        description: `${result.fournisseur} - ${result.montant_ttc}€`,
+      });
 
-    } catch (err) {
-      toast.error("Échec de l'analyse", { description: "Vérifiez votre connexion" });
-    } finally {
-      setLoading(false);
+      // Notification spécifique pour le webhook auto
+      toast.success("Sync Google Sheets", {
+        description: "Données envoyées automatiquement",
+      });
+    } catch (err: any) {
+      console.error("Détail erreur:", err); // Ouvre la console devtools sur mobile
+      toast.error("Échec de l'analyse", {
+        description: err?.message || "Erreur inconnue",
+      });
     }
   };
 
@@ -90,7 +108,6 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-blue-100">
       <div className="max-w-md mx-auto min-h-screen flex flex-col p-6">
-        
         {/* Header */}
         <header className="flex items-center justify-between mb-8 pt-2">
           <div className="flex items-center gap-3">
@@ -99,12 +116,18 @@ export default function Home() {
             </div>
             <div>
               <h1 className="text-xl font-bold tracking-tight">FactureScan</h1>
-              <p className="text-xs text-slate-500 font-medium">Numérisation intelligente</p>
+              <p className="text-xs text-slate-500 font-medium">
+                Numérisation intelligente
+              </p>
             </div>
           </div>
           <a href="/historique" className="group flex flex-col items-end">
-            <span className="text-xs font-semibold text-slate-400 group-hover:text-blue-600 transition">HISTORIQUE</span>
-            <span className="text-lg font-bold text-slate-800">{historyCount}</span>
+            <span className="text-xs font-semibold text-slate-400 group-hover:text-blue-600 transition">
+              HISTORIQUE
+            </span>
+            <span className="text-lg font-bold text-slate-800">
+              {historyCount}
+            </span>
           </a>
         </header>
 
@@ -120,11 +143,15 @@ export default function Home() {
                 capture="environment"
                 onChange={handleImageChange}
               />
-              
+
               {imageBase64 ? (
                 <div className="relative aspect-[3/4] rounded-2xl overflow-hidden mb-4 bg-slate-100">
-                  <img src={imageBase64} alt="Preview" className="w-full h-full object-contain" />
-                  <button 
+                  <img
+                    src={imageBase64}
+                    alt="Preview"
+                    className="w-full h-full object-contain"
+                  />
+                  <button
                     onClick={() => setImageBase64(null)}
                     className="absolute top-3 right-3 bg-black/50 text-white p-2 rounded-full backdrop-blur-sm hover:bg-black/70 transition"
                   >
@@ -132,12 +159,21 @@ export default function Home() {
                   </button>
                 </div>
               ) : (
-                <label htmlFor="camera-input" className="cursor-pointer block py-12">
+                <label
+                  htmlFor="camera-input"
+                  className="cursor-pointer block py-12"
+                >
                   <div className="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
                     <Camera className="w-8 h-8 text-blue-600" />
                   </div>
-                  <h3 className="text-lg font-semibold text-slate-800 mb-1">Scanner une facture</h3>
-                  <p className="text-sm text-slate-500">Appuyez pour prendre une photo<br/>ou choisir dans la galerie</p>
+                  <h3 className="text-lg font-semibold text-slate-800 mb-1">
+                    Scanner une facture
+                  </h3>
+                  <p className="text-sm text-slate-500">
+                    Appuyez pour prendre une photo
+                    <br />
+                    ou choisir dans la galerie
+                  </p>
                 </label>
               )}
 
@@ -147,7 +183,11 @@ export default function Home() {
                   disabled={loading}
                   className="w-full bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-semibold py-4 rounded-xl shadow-lg shadow-blue-200 transition-all flex items-center justify-center gap-2 mt-2"
                 >
-                  {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : "Lancer l'extraction"}
+                  {loading ? (
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                  ) : (
+                    "Lancer l'extraction"
+                  )}
                 </button>
               )}
             </div>
@@ -161,8 +201,12 @@ export default function Home() {
         {loading && (
           <div className="flex-1 flex flex-col items-center justify-center text-center">
             <div className="w-16 h-16 border-4 border-blue-100 border-t-blue-600 rounded-full animate-spin mb-4"></div>
-            <h3 className="text-lg font-semibold text-slate-800">Analyse en cours...</h3>
-            <p className="text-sm text-slate-500 mt-1">Cela peut prendre quelques secondes</p>
+            <h3 className="text-lg font-semibold text-slate-800">
+              Analyse en cours...
+            </h3>
+            <p className="text-sm text-slate-500 mt-1">
+              Cela peut prendre quelques secondes
+            </p>
           </div>
         )}
 
@@ -175,17 +219,23 @@ export default function Home() {
                   <CheckCircle2 className="w-5 h-5 text-green-500" />
                   Données extraites
                 </h2>
-                <span className="text-xs font-mono bg-slate-200 px-2 py-1 rounded text-slate-600">{data.date}</span>
+                <span className="text-xs font-mono bg-slate-200 px-2 py-1 rounded text-slate-600">
+                  {data.date}
+                </span>
               </div>
 
               <div className="p-6 space-y-5">
                 {/* Fournisseur */}
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Fournisseur</label>
-                  <input 
-                    type="text" 
-                    value={data.fournisseur} 
-                    onChange={(e) => setData({...data, fournisseur: e.target.value})}
+                  <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+                    Fournisseur
+                  </label>
+                  <input
+                    type="text"
+                    value={data.fournisseur}
+                    onChange={(e) =>
+                      setData({ ...data, fournisseur: e.target.value })
+                    }
                     className="w-full text-lg font-medium text-slate-900 bg-transparent border-b border-slate-200 focus:border-blue-500 focus:outline-none pb-1 transition-colors"
                   />
                 </div>
@@ -193,23 +243,32 @@ export default function Home() {
                 {/* Grille Montants */}
                 <div className="grid grid-cols-2 gap-6 pt-2">
                   <div className="space-y-1">
-                    <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Total HT</label>
+                    <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+                      Total HT
+                    </label>
                     <div className="flex items-baseline gap-1">
-                      <input 
-                        type="number" 
-                        value={data.montant_ht} 
-                        onChange={(e) => setData({...data, montant_ht: parseFloat(e.target.value)})}
+                      <input
+                        type="number"
+                        value={data.montant_ht}
+                        onChange={(e) =>
+                          setData({
+                            ...data,
+                            montant_ht: parseFloat(e.target.value),
+                          })
+                        }
                         className="w-full text-2xl font-bold text-slate-700 bg-transparent border-b border-slate-200 focus:border-blue-500 focus:outline-none pb-1"
                       />
                       <span className="text-slate-400 font-medium">€</span>
                     </div>
                   </div>
                   <div className="space-y-1">
-                    <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Total TTC</label>
+                    <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+                      Total TTC
+                    </label>
                     <div className="flex items-baseline gap-1">
-                      <input 
-                        type="number" 
-                        value={data.montant_ttc} 
+                      <input
+                        type="number"
+                        value={data.montant_ttc}
                         readOnly
                         className="w-full text-2xl font-bold text-blue-600 bg-transparent border-b border-transparent pb-1"
                       />
@@ -220,21 +279,32 @@ export default function Home() {
 
                 {/* Détails secondaires */}
                 <div className="pt-4 border-t border-dashed border-slate-200 grid grid-cols-2 gap-4">
-                   <div className="space-y-1">
-                    <label className="text-[10px] font-bold text-slate-400 uppercase">N° Facture</label>
-                    <input 
-                      type="text" 
-                      value={data.numero_facture || ""} 
-                      onChange={(e) => setData({...data, numero_facture: e.target.value})}
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-bold text-slate-400 uppercase">
+                      N° Facture
+                    </label>
+                    <input
+                      type="text"
+                      value={data.numero_facture || ""}
+                      onChange={(e) =>
+                        setData({ ...data, numero_facture: e.target.value })
+                      }
                       className="w-full text-sm font-medium text-slate-600 bg-slate-50 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-100 focus:outline-none"
                     />
                   </div>
-                   <div className="space-y-1">
-                    <label className="text-[10px] font-bold text-slate-400 uppercase">TVA</label>
-                    <input 
-                      type="number" 
-                      value={data.montant_tva} 
-                      onChange={(e) => setData({...data, montant_tva: parseFloat(e.target.value)})}
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-bold text-slate-400 uppercase">
+                      TVA
+                    </label>
+                    <input
+                      type="number"
+                      value={data.montant_tva}
+                      onChange={(e) =>
+                        setData({
+                          ...data,
+                          montant_tva: parseFloat(e.target.value),
+                        })
+                      }
                       className="w-full text-sm font-medium text-slate-600 bg-slate-50 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-100 focus:outline-none"
                     />
                   </div>
@@ -244,7 +314,10 @@ export default function Home() {
               {/* Actions */}
               <div className="p-6 bg-slate-50 border-t border-slate-100 flex gap-3">
                 <button
-                  onClick={() => { setData(null); setImageBase64(null); }}
+                  onClick={() => {
+                    setData(null);
+                    setImageBase64(null);
+                  }}
                   className="flex-1 py-3.5 rounded-xl font-semibold text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 transition shadow-sm"
                 >
                   Nouveau scan
