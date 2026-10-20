@@ -62,6 +62,12 @@ export default function Home() {
     if (!imageBase64) return;
     setLoading(true);
 
+    // DEBUG : Affiche l'URL utilisée dans la console
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+    console.log("=== DEBUG API URL ===");
+    console.log("URL utilisée:", apiUrl);
+    console.log("Variable brute:", process.env.NEXT_PUBLIC_API_URL);
+
     toast.info("Analyse en cours...", {
       description: "L'IA lit votre facture",
     });
